@@ -1,5 +1,9 @@
 [![Twitter URL](https://img.shields.io/twitter/url/https/twitter.com/deanthecoder.svg?style=social&label=Follow%20%40deanthecoder)](https://twitter.com/deanthecoder)
 
+<p align="center">
+  <img src="img/logo.png" alt="App Logo">
+</p>
+
 # AgentPrimer
 
 **Automate AI Agent Instruction Generation from Code Repositories**

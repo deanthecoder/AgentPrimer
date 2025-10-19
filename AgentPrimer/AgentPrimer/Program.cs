@@ -42,8 +42,8 @@ internal static class Program
         if (!string.Equals(repoPath, currentPath, StringComparison.OrdinalIgnoreCase))
             repoPath = currentPath;
 
-        Console.WriteLine("== Repo Snapshot ==");
-        Console.WriteLine("Path:");
+        WriteHeader("== Repo Snapshot ==");
+        WriteSectionTitle("Path:");
         Console.WriteLine($"  {repoPath}");
         Console.WriteLine();
 
@@ -51,7 +51,7 @@ internal static class Program
         var githubRepositories = GetGitHubRepositories(repoPath);
         if (githubRepositories.Length > 0)
         {
-            Console.WriteLine($"GitHub ({githubRepositories.Length}):");
+            WriteSectionTitle($"GitHub ({githubRepositories.Length}):");
             foreach (var repo in githubRepositories)
                 Console.WriteLine($"  - {repo.Url} : {repo.Description}");
             Console.WriteLine();
@@ -65,7 +65,7 @@ internal static class Program
             return 1;
         }
 
-        Console.WriteLine("Stats:");
+        WriteSectionTitle("Stats:");
         Console.WriteLine($"  Files      : {sourceFiles.Count}");
 
         // Analyze the source file types (C#, C/C++, JavaScript, Python, etc.).
@@ -81,7 +81,7 @@ internal static class Program
 
         // Find all nuget package references. (Brief descriptions obtained from nuget.org)
         var nugetNameAndDescriptions = AnalyzeNugetPackages(repoPath, appSettings.NugetCache);
-        Console.WriteLine($"NuGet ({nugetNameAndDescriptions.Length}):");
+        WriteSectionTitle($"NuGet ({nugetNameAndDescriptions.Length}):");
         if (nugetNameAndDescriptions.Length == 0)
         {
             Console.WriteLine("  none");
@@ -103,7 +103,7 @@ internal static class Program
         MockingFramework? mockingFramework = containsCSharp ? GetPreferredMockingFramework(nugetNameAndDescriptions) : null;
         var uiLibraries = containsCSharp ? GetPreferredUiLibraries(repoPath) : null;
 
-        Console.WriteLine("Preferences:");
+        WriteSectionTitle("Preferences:");
         if (isNullableTypesEnabled.HasValue)
             Console.WriteLine($"  Nullable   : {((bool)isNullableTypesEnabled ? "enabled (most)" : "disabled (most)")}");
         if (unitTestFramework.HasValue)
@@ -121,7 +121,7 @@ internal static class Program
             var utilities = internalProjectReferences.Where(o => o.ReferenceCount > 0).ToArray();
             var topLevel = internalProjectReferences.Where(o => o.ReferenceCount == 0).ToArray();
 
-            Console.WriteLine("Projects:");
+            WriteSectionTitle("Projects:");
             if (topLevel.Length > 0)
             {
                 var topList = string.Join(", ", topLevel.Select(l => $"{l.Name} ({l.TargetFramework})"));
@@ -140,7 +140,7 @@ internal static class Program
         var readmeFiles = EnumerateFilesSafe(repoPath, "README.md");
         if (readmeFiles.Length > 0)
         {
-            Console.WriteLine("READMEs:");
+            WriteSectionTitle("READMEs:");
             foreach (var readmeFile in readmeFiles)
             {
                 var relativePath = Path.GetRelativePath(repoPath, readmeFile);
@@ -954,5 +954,34 @@ internal static class Program
 
         if (!string.IsNullOrWhiteSpace(line.Trim()))
             Console.WriteLine(line);
+    }
+
+    // Helper methods for colorized section titles
+    private static void WriteHeader(string text)
+    {
+        var prev = Console.ForegroundColor;
+        try
+        {
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.WriteLine(text);
+        }
+        finally
+        {
+            Console.ForegroundColor = prev;
+        }
+    }
+
+    private static void WriteSectionTitle(string text)
+    {
+        var prev = Console.ForegroundColor;
+        try
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine(text);
+        }
+        finally
+        {
+            Console.ForegroundColor = prev;
+        }
     }
 }

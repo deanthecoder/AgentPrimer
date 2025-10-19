@@ -62,6 +62,8 @@ internal static class Program
             return 1;
         }
         Console.WriteLine($"  Languages  : {fileTypes.Select(o => $"{o.Key} ({o.Value:P0})").ToCsv().Replace(",", " | ")}");
+        var englishPreference = EnglishPreferenceAnalyzer.DeterminePreferredEnglishVariant(repoPath, sourceFiles);
+        Console.WriteLine($"  English    : {englishPreference} English");
         Console.WriteLine();
 
         // Find all nuget package references. (Brief descriptions obtained from nuget.org)

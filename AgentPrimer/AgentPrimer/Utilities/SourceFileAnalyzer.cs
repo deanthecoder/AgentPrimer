@@ -16,46 +16,47 @@ namespace AgentPrimer.Utilities;
 /// </summary>
 internal static class SourceFileAnalyzer
 {
+    private static readonly Dictionary<string, string> FileTypeMap = new(StringComparer.OrdinalIgnoreCase)
+    {
+        [".cs"] = "C#",
+        [".fs"] = "F#",
+        [".vb"] = "VB.NET",
+        [".c"] = "C/C++",
+        [".h"] = "C/C++",
+        [".hpp"] = "C/C++",
+        [".cpp"] = "C/C++",
+        [".cc"] = "C/C++",
+        [".mm"] = "Objective-C",
+        [".m"] = "Objective-C",
+        [".java"] = "Java",
+        [".kt"] = "Kotlin",
+        [".swift"] = "Swift",
+        [".js"] = "JavaScript",
+        [".jsx"] = "JavaScript",
+        [".ts"] = "TypeScript",
+        [".tsx"] = "TypeScript",
+        [".py"] = "Python",
+        [".rb"] = "Ruby",
+        [".php"] = "PHP",
+        [".go"] = "Go",
+        [".rs"] = "Rust",
+        [".dart"] = "Dart",
+        [".sql"] = "SQL",
+        [".ps1"] = "PowerShell",
+        [".sh"] = "Shell",
+        [".bat"] = "Batch",
+        [".yml"] = "YAML",
+        [".yaml"] = "YAML"
+    };
+
     public static Dictionary<string, double> AnalyzeFileTypes(IReadOnlyCollection<string> sourceFiles)
     {
-        var fileTypeMap = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
-        {
-            [".cs"] = "C#",
-            [".fs"] = "F#",
-            [".vb"] = "VB.NET",
-            [".c"] = "C/C++",
-            [".h"] = "C/C++",
-            [".hpp"] = "C/C++",
-            [".cpp"] = "C/C++",
-            [".cc"] = "C/C++",
-            [".mm"] = "Objective-C",
-            [".m"] = "Objective-C",
-            [".java"] = "Java",
-            [".kt"] = "Kotlin",
-            [".swift"] = "Swift",
-            [".js"] = "JavaScript",
-            [".jsx"] = "JavaScript",
-            [".ts"] = "TypeScript",
-            [".tsx"] = "TypeScript",
-            [".py"] = "Python",
-            [".rb"] = "Ruby",
-            [".php"] = "PHP",
-            [".go"] = "Go",
-            [".rs"] = "Rust",
-            [".dart"] = "Dart",
-            [".sql"] = "SQL",
-            [".ps1"] = "PowerShell",
-            [".sh"] = "Shell",
-            [".bat"] = "Batch",
-            [".yml"] = "YAML",
-            [".yaml"] = "YAML"
-        };
-
         var counts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         var extensions =
             sourceFiles
-                .Select(o => Path.GetExtension(o.ToLower()))
-                .Where(o => fileTypeMap.ContainsKey(o))
+                .Select(Path.GetExtension)
+                .Select(NormalizeExtension)
+                .Where(extension => extension.Length > 0 && FileTypeMap.ContainsKey(extension))
                 .ToArray();
 
         if (extensions.Length == 0)
@@ -63,7 +64,7 @@ internal static class SourceFileAnalyzer
 
         foreach (var extension in extensions)
         {
-            var language = fileTypeMap[extension];
+            var language = FileTypeMap[extension];
             counts[language] = counts.TryGetValue(language, out var count)
                 ? count + 1
                 : 1;
@@ -73,5 +74,18 @@ internal static class SourceFileAnalyzer
         return counts
             .OrderByDescending(kv => kv.Value)
             .ToDictionary(kv => kv.Key, kv => kv.Value / total, StringComparer.OrdinalIgnoreCase);
+    }
+
+    internal static bool IsRecognizedSourceExtension(string extension)
+    {
+        var normalized = NormalizeExtension(extension);
+        return normalized.Length > 0 && FileTypeMap.ContainsKey(normalized);
+    }
+
+    private static string NormalizeExtension(string extension)
+    {
+        return string.IsNullOrEmpty(extension)
+            ? string.Empty
+            : extension.ToLowerInvariant();
     }
 }

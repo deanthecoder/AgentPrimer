@@ -4,39 +4,97 @@
   <img src="img/logo.png" alt="App Logo">
 </p>
 
-# AgentPrimer
+# AgentPrimer  
+### A quick way to teach AI tools how your codebase works
 
-**Automate AI Agent Instruction Generation from Code Repositories**
+AgentPrimer scans a repository and builds a smart snapshot of its structure, dependencies, and coding style.  
+It’s like handing an AI assistant a crash course in your project before it ever writes a line of code.
 
-AgentPrimer analyzes software repositories and generates an intermediate instruction file for a coding agent to use when creating the final `agent.md`. This approach ensures robust, consistent, and high-quality results—especially for large repositories—by leveraging detailed offline analysis.
+---
 
-## What is `agent.md`?
+## What It Does
 
-`agent.md` is a file that provides instructions for AI agents to understand and interact with a software repository.
+- Summarizes repo structure, file paths, and linked GitHub remotes.  
+- Reports language mix, package dependencies, and framework usage.  
+- Highlights project layout, test frameworks, and authoring conventions.
 
-It contains information about the repository's structure, dependencies, code style, testing frameworks, and build/deployment processes. This file helps AI agents to better understand the repository's context and generate more accurate and useful code suggestions.
+---
 
-For more information about AI agent instructions and their role in code understanding,
-see [here](https://agentsmd.net/#what-is-agentsmd).
+## What’s `agent.md`?
 
-## Why AgentPrimer?
+`agent.md` is a machine-readable guide that gives coding AIs project-specific context — dependencies, test setup, build flow, and conventions.  
+[Learn more →](https://agentsmd.net/#what-is-agentsmd)
 
-AgentPrimer enables developers to quickly produce reliable `agent.md` instructions for AI tools, saving time and effort. It delivers consistent AI behavior tailored to each project and provides rich repository context without consuming tokens, streamlining your development workflow. Whether you’re working solo or in a team using AI coding assistants, AgentPrimer enhances productivity and code comprehension.
+---
 
-Give it a try and see how it can elevate your AI-driven development. If you find it helpful, don’t forget to star the repo!
+## Usage
 
-## Quick Start
+Run AgentPrimer from the root of the repo you want to analyze:
 
-Run AgentPrimer from your repository’s root directory with a single command. It analyzes the repository and outputs an intermediate instruction file for a coding agent to generate the final `agent.md`. This method ensures consistent, high-quality `agent.md` creation through advanced offline analysis, even for large projects.
+```bash
+dotnet run --project AgentPrimer
+```
+
+You’ll get output like this:
+
+```
+Path:
+  /Users/dean/Documents/Source/Repos/Tetra
+
+GitHub (2):
+  - https://github.com/deanthecoder/Tetra : Cross platform virtual machine with native vector support
+  - https://github.com/deanthecoder/DTC.Core : Core C# library (used by many deanthecoder repos)
+
+Stats:
+  Files      : 177
+  Languages  : C# (99%) | C/C++ (1%)
+  English    : American English
+
+NuGet (15):
+  Avalonia | coverlet.collector | DialogHost.Avalonia
+  DotnetNoise | JetBrains.Annotations | K4os.Compression.LZ4
+  Material.Avalonia | Material.Icons.Avalonia
+  Microsoft.NET.Test.Sdk | Newtonsoft.Json | NUnit
+  NUnit3TestAdapter | OpenCvSharp4 | SkiaSharp | TextCopy
+
+Preferences:
+  Nullable   : disabled (most)
+  Tests      : NUnit
+  Mocking    : Unknown
+  UI         : Avalonia
+
+Projects:
+  Top-level  : TetraShade.csproj (net9.0), UnitTests.csproj (net9.0)
+  Internal   : DTC.Core.csproj (net8.0) [refs:5]
+               TetraCore.csproj (net9.0) [refs:3]
+               DTC.GLSLLexer.csproj (net9.0) [refs:2]
+               DTC.GLSLParser.csproj (net9.0) [refs:1]
+               DTC.Preprocessor.csproj (net9.0) [refs:1]
+
+READMEs:
+  README.md
+  DTC.Core/README.md
+  DTC.GLSLLexer/README.md
+  DTC.GLSLParser/README.md
+```
+
+---
+
+## Why Use It?
+
+AgentPrimer gives AI tools the same understanding of your repo that a human would gain from a deep dive — instantly.  
+It’s fast, consistent, and ensures every generated `agent.md` starts from solid, accurate insight.
+
+---
 
 ## Goals
 
-- Understand repository structure comprehensively.  
-- Identify internal and external libraries and dependencies.  
-- Analyze code style and naming conventions.  
-- Detect test frameworks and methodologies.  
-- Summarize build and deployment processes.  
-- Generate consistent, high-quality intermediate instructions for AI agents to produce `agent.md`.  
+- Deliver an accurate, repeatable repo overview.  
+- Capture the key details needed to generate `agent.md`.  
+- Reveal structure, dependencies, and testing conventions clearly.  
+- Help AI agents slot into your workflow with minimal setup.
+
+---
 
 ## License
 

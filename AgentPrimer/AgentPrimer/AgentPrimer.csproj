@@ -17,4 +17,8 @@
       <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\DTC.Core\DTC.Core\DTC.Core.csproj" />
+    </ItemGroup>
+
 </Project>

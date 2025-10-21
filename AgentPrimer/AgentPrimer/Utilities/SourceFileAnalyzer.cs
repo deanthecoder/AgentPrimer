@@ -72,6 +72,7 @@ internal static class SourceFileAnalyzer
 
         var total = (double)extensions.Length;
         return counts
+            .Where(o => o.Value / total >= 0.05) // Threshold at 5%.
             .OrderByDescending(kv => kv.Value)
             .ToDictionary(kv => kv.Key, kv => kv.Value / total, StringComparer.OrdinalIgnoreCase);
     }

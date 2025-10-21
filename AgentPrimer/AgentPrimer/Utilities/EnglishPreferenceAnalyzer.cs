@@ -74,6 +74,9 @@ internal static class EnglishPreferenceAnalyzer
                 americanCount += CountOccurrences(contents, pair.American);
                 britishCount += CountOccurrences(contents, pair.British);
             }
+
+            if (americanCount + britishCount >= 200)
+                break; // That's enough of a sample.
         }
 
         return britishCount > americanCount ? EnglishVariant.British : EnglishVariant.American;

@@ -33,11 +33,11 @@ internal static class Program
         Console.WriteLine();
 
         // Identify GitHub repositories from git remotes and submodules.
-        var githubRepositories = GitRepositoryInspector.GetGitHubRepositories(repoPath);
-        if (githubRepositories.Length > 0)
+        var repositories = GitRepositoryInspector.GetRepositories(repoPath);
+        if (repositories.Length > 0)
         {
-            ConsoleSectionWriter.WriteSectionTitle($"GitHub ({githubRepositories.Length}):");
-            foreach (var repo in githubRepositories)
+            ConsoleSectionWriter.WriteSectionTitle($"Repositories ({repositories.Length}):");
+            foreach (var repo in repositories)
                 Console.WriteLine($"  - {repo.Url} : {repo.Description}");
             Console.WriteLine();
         }

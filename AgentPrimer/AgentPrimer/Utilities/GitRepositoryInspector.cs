@@ -20,19 +20,19 @@ namespace AgentPrimer.Utilities;
 /// </summary>
 internal static class GitRepositoryInspector
 {
-    public static (string Url, string Description)[] GetGitHubRepositories(string repoPath)
+    public static (string Url, string Description)[] GetRepositories(string repoPath)
     {
         var slugs = new List<string>();
 
-        foreach (var remoteUrl in GetGitRemoteUrls(repoPath))
+        foreach (var remoteUrl in GetRepoRemoteUrls(repoPath))
         {
-            if (TryGetGitHubSlug(remoteUrl, out var slug))
+            if (TryGetRepoSlug(remoteUrl, out var slug))
                 slugs.Add(slug);
         }
 
-        foreach (var submoduleUrl in GetGitSubmoduleUrls(repoPath))
+        foreach (var submoduleUrl in GetRepoSubmoduleUrls(repoPath))
         {
-            if (TryGetGitHubSlug(submoduleUrl, out var slug))
+            if (TryGetRepoSlug(submoduleUrl, out var slug))
                 slugs.Add(slug);
         }
 
@@ -56,7 +56,7 @@ internal static class GitRepositoryInspector
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to initialize GitHub client: {ex.Message}");
+            Console.WriteLine($"Failed to initialize repo client: {ex.Message}");
         }
 
         return results.ToArray();
@@ -119,7 +119,7 @@ internal static class GitRepositoryInspector
         return files;
     }
 
-    private static string[] GetGitRemoteUrls(string repoPath)
+    private static string[] GetRepoRemoteUrls(string repoPath)
     {
         var urls = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
@@ -166,7 +166,7 @@ internal static class GitRepositoryInspector
         return urls.ToArray();
     }
 
-    private static string[] GetGitSubmoduleUrls(string repoPath)
+    private static string[] GetRepoSubmoduleUrls(string repoPath)
     {
         var gitmodulesPath = Path.Combine(repoPath, ".gitmodules");
         if (!File.Exists(gitmodulesPath))
@@ -199,7 +199,7 @@ internal static class GitRepositoryInspector
         return urls.ToArray();
     }
 
-    private static bool TryGetGitHubSlug(string url, out string slug)
+    private static bool TryGetRepoSlug(string url, out string slug)
     {
         slug = string.Empty;
         if (string.IsNullOrWhiteSpace(url))

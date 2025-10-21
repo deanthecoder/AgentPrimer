@@ -30,11 +30,15 @@ internal static class NugetPackageAnalyzer
         foreach (var packagesConfig in RepositoryFileEnumerator.EnumerateFilesSafe(rootDirectory, "packages.config"))
         foreach (var packageId in GetPackagesFromPackagesConfig(packagesConfig))
             packageIds.Add(packageId);
+        
+        // Exclude System.*, Microsoft.*
+        packageIds = packageIds.Where(o => !o.StartsWith("System.") && !o.StartsWith("Microsoft.")).ToHashSet();
+        
+        // Exclude multiple packages with the same prefix.
+        packageIds = packageIds.Where(o => !packageIds.Any(name => o.StartsWith(name + ".", StringComparison.OrdinalIgnoreCase))).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         if (packageIds.Count == 0)
             return [];
-
-        packageIds = packageIds.Where(o => !packageIds.Any(name => o.StartsWith(name + ".", StringComparison.OrdinalIgnoreCase))).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var result =
             nugetCache
@@ -58,7 +62,9 @@ internal static class NugetPackageAnalyzer
             foreach (var packageId in unknownPackageIds)
             {
                 var description = TryGetNugetDescription(httpClient, packageId);
-                result[packageId] = string.IsNullOrWhiteSpace(description) ? "Description unavailable." : description;
+                if (string.IsNullOrWhiteSpace(description))
+                    description = "Description unavailable.";
+                result[packageId] = description;
                 nugetCache.Add($"{packageId}|{description}");
             }
         }

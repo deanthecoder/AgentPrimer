@@ -79,7 +79,7 @@ internal static class Program
                 .Select(i => i.Name)
                 .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
                 .ToArray();
-            ConsoleSectionWriter.PrintWrappedList(names, indent: "  ", maxWidth: 60, separator: " | ");
+            ConsoleSectionWriter.PrintWrappedList(names, indent: "  ", maxWidth: 80, separator: " | ");
         }
         Console.WriteLine();
 
@@ -92,7 +92,7 @@ internal static class Program
 
         ConsoleSectionWriter.WriteSectionTitle("Preferences:");
         if (isNullableTypesEnabled.HasValue)
-            Console.WriteLine($"  Nullable   : {((bool)isNullableTypesEnabled ? "enabled (most)" : "disabled (most)")}");
+            Console.WriteLine($"  Nullable   : {((bool)isNullableTypesEnabled ? "enabled" : "disabled")}");
         if (unitTestFramework.HasValue)
             Console.WriteLine($"  Tests      : {unitTestFramework}");
         if (mockingFramework.HasValue)
@@ -111,12 +111,13 @@ internal static class Program
             ConsoleSectionWriter.WriteSectionTitle("Projects:");
             if (topLevel.Length > 0)
             {
-                var topList = string.Join(", ", topLevel.Select(l => $"{l.Name} ({l.TargetFramework})"));
-                Console.WriteLine($"  Top-level  : {topList}");
+                Console.WriteLine($"  Top-level  : {topLevel[0].Name} ({topLevel[0].TargetFramework})");
+                foreach (var project in topLevel.Skip(1))
+                    Console.WriteLine($"               {project.Name} ({project.TargetFramework})");
             }
             if (utilities.Length > 0)
             {
-                Console.WriteLine("  Internal   : " + (utilities.Length > 0 ? $"{utilities[0].Name} ({utilities[0].TargetFramework}) [refs:{utilities[0].ReferenceCount}]" : ""));
+                Console.WriteLine($"  Internal   : {utilities[0].Name} ({utilities[0].TargetFramework}) [refs:{utilities[0].ReferenceCount}]");
                 foreach (var library in utilities.Skip(1))
                     Console.WriteLine($"               {library.Name} ({library.TargetFramework}) [refs:{library.ReferenceCount}]");
             }
@@ -128,7 +129,11 @@ internal static class Program
         if (readmeFiles.Length > 0)
         {
             ConsoleSectionWriter.WriteSectionTitle("READMEs:");
-            foreach (var readmeFile in readmeFiles)
+            foreach (var readmeFile in
+                     readmeFiles
+                         .Where(o => !o.Contains("/bin/") && !o.Contains("\\bin\\") && !o.Contains("/obj/") &&
+                                     !o.Contains("\\obj\\") && !o.Contains("/packages/") && !o.Contains("\\packages\\"))
+                         .OrderBy(o => o))
             {
                 var relativePath = Path.GetRelativePath(repoPath, readmeFile);
                 Console.WriteLine($"  {relativePath}");

@@ -109,15 +109,9 @@ internal static class ProjectPreferencesAnalyzer
     {
         var projectFiles = RepositoryFileEnumerator.EnumerateFilesSafe(rootDirectory, "*.csproj");
         if (projectFiles.Length == 0)
-            return true;
+            return false;
 
-        var disabledCount = 0;
-        foreach (var projectFile in projectFiles)
-        {
-            if (DoesProjectDisableNullable(projectFile))
-                disabledCount++;
-        }
-
+        var disabledCount = projectFiles.Count(DoesProjectDisableNullable);
         return disabledCount * 2 <= projectFiles.Length;
     }
 
@@ -144,6 +138,7 @@ internal static class ProjectPreferencesAnalyzer
 
                 var targetFramework = document
                     .Descendants(ns + "TargetFramework")
+                    .Union(document.Descendants(ns + "TargetFrameworkVersion"))
                     .Select(e => e.Value.Trim())
                     .FirstOrDefault(value => !string.IsNullOrEmpty(value));
 
@@ -230,11 +225,17 @@ internal static class ProjectPreferencesAnalyzer
                 var document = XDocument.Load(projectPath);
                 var ns = document.Root?.Name.Namespace ?? XNamespace.None;
 
+                var hasWpf = document
+                    .Descendants(ns + "UseWPF")
+                    .Select(o => o.Value.Trim())
+                    .Any(value => string.Equals(value, "true", StringComparison.OrdinalIgnoreCase));
+                if (hasWpf)
+                    return false; // Not WinForms.
+
                 var hasWinForms = document
                     .Descendants(ns + "UseWindowsForms")
                     .Select(o => o.Value.Trim())
                     .Any(value => string.Equals(value, "true", StringComparison.OrdinalIgnoreCase));
-
                 if (hasWinForms)
                     return true;
             }
@@ -254,10 +255,11 @@ internal static class ProjectPreferencesAnalyzer
             var document = XDocument.Load(projectPath);
             var ns = document.Root?.Name.Namespace ?? XNamespace.None;
 
-            return document
+            // Default is disabled, unless we find <Nullable>enable</Nullable>
+            return !document
                 .Descendants(ns + "Nullable")
                 .Select(o => o.Value.Trim())
-                .Any(value => string.Equals(value, "disable", StringComparison.OrdinalIgnoreCase));
+                .Any(value => string.Equals(value, "enable", StringComparison.OrdinalIgnoreCase));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Xml.XmlException)
         {

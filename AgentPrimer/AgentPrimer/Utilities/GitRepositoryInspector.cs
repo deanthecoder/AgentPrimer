@@ -9,9 +9,9 @@
 //
 // THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND.
 
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Text.Json;
+using DTC.Core.Extensions;
 
 namespace AgentPrimer.Utilities;
 
@@ -67,54 +67,27 @@ internal static class GitRepositoryInspector
         var files = new List<string>();
         isGitInstalled = true;
 
-        try
-        {
-            var psi = new ProcessStartInfo
-            {
-                FileName = "git",
-                Arguments = "ls-files --full-name --recurse-submodules",
-                WorkingDirectory = repoPath,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            using var process = Process.Start(psi);
-            if (process is null)
-            {
-                isGitInstalled = false;
-                return files;
-            }
-
-            var standardOutput = process.StandardOutput.ReadToEnd();
-            var standardError = process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            if (process.ExitCode != 0)
-            {
-                Console.WriteLine($"git ls-files returned exit code {process.ExitCode}.");
-                if (!string.IsNullOrWhiteSpace(standardError))
-                    Console.WriteLine(standardError.Trim());
-
-                return files;
-            }
-
-            files
-                .AddRange(
-                    standardOutput
-                        .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
-                        .Select(line => line.Trim())
-                        .Where(trimmed => trimmed.Length > 0));
-        }
-        catch (Win32Exception)
+        if (!RunGitCommand(repoPath, "ls-files --full-name --recurse-submodules", out var result))
         {
             isGitInstalled = false;
+            return files;
         }
-        catch (Exception ex)
+
+        if (result.ExitCode != 0)
         {
-            Console.WriteLine($"Failed to execute git ls-files: {ex.Message}");
+            Console.WriteLine($"git ls-files returned exit code {result.ExitCode}.");
+            if (!string.IsNullOrWhiteSpace(result.StandardError))
+                Console.WriteLine(result.StandardError);
+
+            return files;
         }
+
+        files
+            .AddRange(
+                result.StandardOutput
+                    .Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+                    .Select(line => line.Trim())
+                    .Where(trimmed => trimmed.Length > 0));
 
         return files;
     }
@@ -123,44 +96,19 @@ internal static class GitRepositoryInspector
     {
         var urls = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        try
-        {
-            var psi = new ProcessStartInfo
-            {
-                FileName = "git",
-                Arguments = "remote -v",
-                WorkingDirectory = repoPath,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                UseShellExecute = false,
-                CreateNoWindow = true
-            };
-
-            using var process = Process.Start(psi);
-            if (process is null)
-                return [];
-
-            var standardOutput = process.StandardOutput.ReadToEnd();
-            process.StandardError.ReadToEnd();
-            process.WaitForExit();
-
-            if (process.ExitCode != 0)
-                return [];
-
-            foreach (var line in standardOutput.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
-            {
-                var parts = line.Split(['\t', ' '], StringSplitOptions.RemoveEmptyEntries);
-                if (parts.Length >= 2)
-                    urls.Add(parts[1]);
-            }
-        }
-        catch (Win32Exception)
+        if (!RunGitCommand(repoPath, "remote -v", out var result))
         {
             return [];
         }
-        catch (Exception ex)
+
+        if (!result.IsSuccess)
+            return [];
+
+        foreach (var line in result.StandardOutput.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
         {
-            Console.WriteLine($"Failed to read git remotes: {ex.Message}");
+            var parts = line.Split(['\t', ' '], StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length >= 2)
+                urls.Add(parts[1]);
         }
 
         return urls.ToArray();
@@ -283,5 +231,25 @@ internal static class GitRepositoryInspector
         }
 
         return null;
+    }
+
+    private static bool RunGitCommand(string repoPath, string arguments, out ProcessCaptureResult result)
+    {
+        try
+        {
+            result = new ProcessStartInfo
+            {
+                FileName = "git",
+                Arguments = arguments,
+                WorkingDirectory = repoPath
+            }.RunAndCaptureOutput();
+            return result != null;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to execute git '{arguments}': {ex.Message}");
+            result = null;
+            return false;
+        }
     }
 }

@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AgentPrimer", "AgentPrimer\AgentPrimer.csproj", "{3E476D8B-F3CE-44DE-BDA7-896A6402B4E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTC.Core", "..\DTC.Core\DTC.Core\DTC.Core.csproj", "{950B86B7-B9FF-443E-BE53-BC30193C8FCF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DTC.Core", "DTC.Core\DTC.Core\DTC.Core.csproj", "{950B86B7-B9FF-443E-BE53-BC30193C8FCF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

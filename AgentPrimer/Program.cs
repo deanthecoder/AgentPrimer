@@ -71,6 +71,8 @@ internal static class Program
             .Select(path => Path.GetRelativePath(repoPath, path))
             .ToArray();
 
+        var largestSourceFiles = GetLargestSourceFiles(repoPath, sourceFiles);
+
         var report = new PrimerReport
         {
             RepositoryPath = repoPath,
@@ -84,9 +86,48 @@ internal static class Program
             MockingFramework = mockingFramework,
             PreferredUiLibraries = uiLibraries ?? [],
             InternalProjects = internalProjectReferences,
-            ReadmeFiles = readmeFiles
+            ReadmeFiles = readmeFiles,
+            LargestSourceFiles = largestSourceFiles
         };
 
         return output.WriteReport(report);
+    }
+
+    private static (string Path, long Size)[] GetLargestSourceFiles(string repoPath, IList<string> trackedFiles)
+    {
+        if (trackedFiles.Count == 0)
+            return [];
+
+        var candidates = new List<(string Path, long Size)>();
+
+        foreach (var relativePath in trackedFiles)
+        {
+            if (!SourceFileAnalyzer.IsRecognizedSourceExtension(Path.GetExtension(relativePath)))
+                continue;
+
+            var fullPath = Path.Combine(repoPath, relativePath);
+            try
+            {
+                var fileInfo = new FileInfo(fullPath);
+                if (!fileInfo.Exists)
+                    continue;
+
+                candidates.Add((relativePath, fileInfo.Length));
+            }
+            catch (IOException)
+            {
+                // Ignore files that cannot be inspected.
+            }
+            catch (UnauthorizedAccessException)
+            {
+                // Ignore files we cannot read.
+            }
+        }
+
+        return candidates
+            .OrderByDescending(f => f.Size)
+            .ThenBy(f => f.Path, StringComparer.OrdinalIgnoreCase)
+            .Take(8)
+            .ToArray();
     }
 }

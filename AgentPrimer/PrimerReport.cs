@@ -41,4 +41,6 @@ internal sealed class PrimerReport
     public required IReadOnlyList<(string Name, int ReferenceCount, string TargetFramework)> InternalProjects { get; init; }
 
     public required IReadOnlyList<string> ReadmeFiles { get; init; }
+    
+    public (string Path, long Size)[] LargestSourceFiles { get; init; }
 }

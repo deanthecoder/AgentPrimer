@@ -49,7 +49,7 @@ internal sealed class ConsoleReportOutput
             foreach (var repository in report.Repositories)
             {
                 sb.AppendLine($"  - {repository.Url} {(repository.IsSubmodule ? "(Submodule)" : string.Empty)}  ");
-                sb.AppendLine($"    {repository.Description}  ");
+                sb.AppendLine($"    {repository.Description}");
             }
         }
 
@@ -71,6 +71,13 @@ internal sealed class ConsoleReportOutput
         }
         
         sb.AppendLine($"* English    : {report.EnglishPreference} English");
+
+        if (report.LargestSourceFiles.Length > 0)
+        {
+            sb.AppendLine($"## Largest Source Files ({report.LargestSourceFiles.Length})");
+            foreach (var file in report.LargestSourceFiles)
+                sb.AppendLine($"* {file.Size.ToSize(),-12} : `{file.Path}`");
+        }
 
         sb.AppendLine($"## NuGet ({report.NugetPackages.Count})");
         if (report.NugetPackages.Count == 0)

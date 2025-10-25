@@ -9,6 +9,8 @@
 //
 // THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND.
 
+using System.Text;
+
 namespace AgentPrimer.Utilities;
 
 /// <summary>
@@ -16,39 +18,11 @@ namespace AgentPrimer.Utilities;
 /// </summary>
 internal static class ConsoleSectionWriter
 {
-    public static void WriteHeader(string text)
-    {
-        var prev = Console.ForegroundColor;
-        try
-        {
-            Console.ForegroundColor = ConsoleColor.White;
-            Console.WriteLine(text);
-        }
-        finally
-        {
-            Console.ForegroundColor = prev;
-        }
-    }
-
-    public static void WriteSectionTitle(string text)
-    {
-        var prev = Console.ForegroundColor;
-        try
-        {
-            Console.ForegroundColor = ConsoleColor.Cyan;
-            Console.WriteLine(text);
-        }
-        finally
-        {
-            Console.ForegroundColor = prev;
-        }
-    }
-
-    public static void PrintWrappedList(IEnumerable<string> items, string indent, int maxWidth, string separator = " | ")
+    public static void PrintWrappedList(StringBuilder sb, IEnumerable<string> items, string indent, int maxWidth, string separator = " | ")
     {
         if (items is null)
         {
-            Console.WriteLine(indent + "none");
+            sb.AppendLine(indent + "none");
             return;
         }
 
@@ -61,7 +35,7 @@ internal static class ConsoleSectionWriter
 
             if (line.Length + token.Length > maxWidth)
             {
-                Console.WriteLine(line);
+                sb.AppendLine(line);
                 line = indent + item;
                 firstInLine = false;
                 continue;
@@ -72,6 +46,6 @@ internal static class ConsoleSectionWriter
         }
 
         if (!string.IsNullOrWhiteSpace(line.Trim()))
-            Console.WriteLine(line);
+            sb.AppendLine(line);
     }
 }

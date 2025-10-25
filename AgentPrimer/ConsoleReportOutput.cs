@@ -47,7 +47,10 @@ internal sealed class ConsoleReportOutput
         {
             sb.AppendLine($"## Repositories ({report.Repositories.Count})");
             foreach (var repository in report.Repositories)
-                sb.AppendLine($"  - {repository.Url} : {repository.Description}");
+            {
+                sb.AppendLine($"  - {repository.Url} {(repository.IsSubmodule ? "(Submodule)" : string.Empty)}  ");
+                sb.AppendLine($"    {repository.Description}  ");
+            }
         }
 
         sb.AppendLine("## Stats");

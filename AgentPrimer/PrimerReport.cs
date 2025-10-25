@@ -20,7 +20,7 @@ internal sealed class PrimerReport
 {
     public required string RepositoryPath { get; init; }
 
-    public required IReadOnlyList<(string Url, string Description)> Repositories { get; init; }
+    public required IReadOnlyList<(string Url, string Description, bool IsSubmodule)> Repositories { get; init; }
 
     public required int SourceFileCount { get; init; }
 
@@ -29,8 +29,6 @@ internal sealed class PrimerReport
     public required EnglishPreferenceAnalyzer.EnglishVariant EnglishPreference { get; init; }
 
     public required IReadOnlyList<(string Name, string Description)> NugetPackages { get; init; }
-
-    public required bool ContainsCSharp { get; init; }
 
     public bool? NullableReferenceTypesEnabled { get; init; }
 

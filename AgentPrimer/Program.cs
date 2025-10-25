@@ -79,7 +79,6 @@ internal static class Program
             LanguageBreakdown = fileTypes,
             EnglishPreference = englishPreference,
             NugetPackages = nugetNameAndDescriptions,
-            ContainsCSharp = containsCSharp,
             NullableReferenceTypesEnabled = isNullableTypesEnabled,
             UnitTestFramework = unitTestFramework,
             MockingFramework = mockingFramework,

@@ -20,26 +20,41 @@ namespace AgentPrimer.Utilities;
 /// </summary>
 internal static class GitRepositoryInspector
 {
-    public static (string Url, string Description)[] GetRepositories(string repoPath)
+    public static IReadOnlyList<(string Url, string Description, bool IsSubmodule)> GetRepositories(string repoPath)
     {
-        var slugs = new List<string>();
+        var slugEntries = new List<(string Slug, bool IsSubmodule)>();
+        var slugIndices = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+
+        void AddOrUpdateSlug(string slug, bool isSubmodule)
+        {
+            if (slugIndices.TryGetValue(slug, out var index))
+            {
+                if (isSubmodule && !slugEntries[index].IsSubmodule)
+                    slugEntries[index] = (slugEntries[index].Slug, true);
+            }
+            else
+            {
+                slugIndices[slug] = slugEntries.Count;
+                slugEntries.Add((slug, isSubmodule));
+            }
+        }
 
         foreach (var remoteUrl in GetRepoRemoteUrls(repoPath))
         {
             if (TryGetRepoSlug(remoteUrl, out var slug))
-                slugs.Add(slug);
+                AddOrUpdateSlug(slug, isSubmodule: false);
         }
 
         foreach (var submoduleUrl in GetRepoSubmoduleUrls(repoPath))
         {
             if (TryGetRepoSlug(submoduleUrl, out var slug))
-                slugs.Add(slug);
+                AddOrUpdateSlug(slug, isSubmodule: true);
         }
 
-        if (slugs.Count == 0)
+        if (slugEntries.Count == 0)
             return [];
 
-        var results = new List<(string Url, string Description)>();
+        var results = new List<(string Url, string Description, bool IsSubmodule)>();
 
         try
         {
@@ -47,11 +62,14 @@ internal static class GitRepositoryInspector
             httpClient.Timeout = TimeSpan.FromSeconds(5);
             httpClient.DefaultRequestHeaders.UserAgent.ParseAdd("AgentPrimer/1.0");
 
-            foreach (var slug in slugs)
+            foreach (var entry in slugEntries)
             {
-                var repoInfo = TryFetchGitHubRepoInfo(httpClient, slug);
+                var repoInfo = TryFetchGitHubRepoInfo(httpClient, entry.Slug);
                 if (repoInfo.HasValue)
-                    results.Add(repoInfo.Value);
+                {
+                    var info = repoInfo.Value;
+                    results.Add((info.Url, info.Description, entry.IsSubmodule));
+                }
             }
         }
         catch (Exception ex)
@@ -199,17 +217,7 @@ internal static class GitRepositoryInspector
             var root = document.RootElement;
             var repoUrl = root.TryGetProperty("html_url", out var htmlUrl)
                 ? htmlUrl.GetString()
-                : null;
-
-            if (string.IsNullOrWhiteSpace(repoUrl))
-            {
-                var fullName = root.TryGetProperty("full_name", out var fullNameElement)
-                    ? fullNameElement.GetString()
-                    : null;
-                repoUrl = string.IsNullOrWhiteSpace(fullName)
-                    ? $"https://github.com/{slug}"
-                    : $"https://github.com/{fullName}";
-            }
+                : "<Unknown URL>";
 
             var description = root.TryGetProperty("description", out var descriptionElement)
                 ? descriptionElement.GetString()
@@ -217,7 +225,7 @@ internal static class GitRepositoryInspector
 
             var formattedDescription = string.IsNullOrWhiteSpace(description)
                 ? "Description unavailable."
-                : description!.Split(['\r', '\n'])[0].Trim();
+                : description.Split('\r', '\n')[0].Trim();
 
             return (repoUrl!, formattedDescription);
         }

@@ -20,9 +20,9 @@ It’s like handing an AI assistant a crash course in your project before it eve
 
 ---
 
-## What’s `agent.md`?
+## What’s `agents.md`?
 
-`agent.md` is a machine-readable guide that gives coding AIs project-specific context — dependencies, test setup, build flow, and conventions.  
+`agents.md` is a machine-readable guide that gives coding AIs project-specific context — dependencies, test setup, build flow, and conventions.  
 [Learn more →](https://agentsmd.net/#what-is-agentsmd)
 
 ---
@@ -38,44 +38,51 @@ dotnet run --project AgentPrimer
 You’ll get output like this:
 
 ```
-Path:
-  /Users/dean/Documents/Source/Repos/Tetra
+Repositories (3)
+  * https://github.com/deanthecoder/AgentPrimer  
+    Efficiently auto-generate AI agent instructions for your coding project.
+  * https://github.com/deanthecoder/DTC.Core (Submodule)  
+    Core C# library (used by many deanthecoder repos)
+  * https://github.com/deanthecoder/DTC.Installer (Submodule)  
+    Cross platform script for packaging applications.
+  
+Stats
+  * Files      : 104
+  * Languages  : C# (99%)
+  * English    : American English
+  
+Largest Source Files (8)
+  * 19.51 KB     : Installer/pack.py
+  * 17.38 KB     : DTC.Core/DTC.Core/UI/ShaderControl.cs
+  * 15.63 KB     : DTC.Core/DTC.Core/Extensions/FastLinq.cs
+  * 14.68 KB     : DTC.Core/DTC.Core/Markdown/ConsoleRenderer.cs
+  * 11.07 KB     : AgentPrimer/Utilities/ProjectPreferencesAnalyzer.cs
+  * 10.81 KB     : DTC.Core/DTC.Core/Extensions/DirectoryInfoExtensions.cs
+  * 8.59 KB      : AgentPrimer/Utilities/GitRepositoryInspector.cs
+  * 8.44 KB      : AgentPrimer/ConsoleReportOutput.cs
+  
+NuGet (11)
+  Avalonia | DialogHost.Avalonia | DotnetNoise | JetBrains.Annotations
+  K4os.Compression.LZ4 | Markdig | Material.Avalonia
+  Material.Icons.Avalonia | Newtonsoft.Json | OpenCvSharp4 | SkiaSharp
 
-GitHub (2):
-  - https://github.com/deanthecoder/Tetra : Cross platform virtual machine with native vector support
-  - https://github.com/deanthecoder/DTC.Core : Core C# library (used by many deanthecoder repos)
-
-Stats:
-  Files      : 177
-  Languages  : C# (99%) | C/C++ (1%)
-  English    : American English
-
-NuGet (15):
-  Avalonia | coverlet.collector | DialogHost.Avalonia
-  DotnetNoise | JetBrains.Annotations | K4os.Compression.LZ4
-  Material.Avalonia | Material.Icons.Avalonia
-  Microsoft.NET.Test.Sdk | Newtonsoft.Json | NUnit
-  NUnit3TestAdapter | OpenCvSharp4 | SkiaSharp | TextCopy
-
-Preferences:
-  Nullable   : disabled (most)
-  Tests      : NUnit
-  Mocking    : Unknown
-  UI         : Avalonia
-
-Projects:
-  Top-level  : TetraShade.csproj (net9.0), UnitTests.csproj (net9.0)
-  Internal   : DTC.Core.csproj (net8.0) [refs:5]
-               TetraCore.csproj (net9.0) [refs:3]
-               DTC.GLSLLexer.csproj (net9.0) [refs:2]
-               DTC.GLSLParser.csproj (net9.0) [refs:1]
-               DTC.Preprocessor.csproj (net9.0) [refs:1]
-
-READMEs:
-  README.md
-  DTC.Core/README.md
-  DTC.GLSLLexer/README.md
-  DTC.GLSLParser/README.md
+Preferences
+  * Nullable : disabled
+  * Tests    : Unknown
+  * Mocking  : Unknown
+  * UI       : Avalonia
+  
+Projects
+  Top-level
+    * AgentPrimer.csproj (net9.0)
+  
+  Internal
+    * DTC.Core.csproj (net8.0) [refs:1]
+  
+READMEs (3)
+  * DTC.Core/README.md
+  * Installer/README.md
+  * README.md
 ```
 
 ---
@@ -83,14 +90,14 @@ READMEs:
 ## Why Use It?
 
 AgentPrimer gives AI tools the same understanding of your repo that a human would gain from a deep dive — instantly.  
-It’s fast, consistent, and ensures every generated `agent.md` starts from solid, accurate insight.
+It’s fast, consistent, and ensures every generated `agents.md` starts from solid, accurate insight.
 
 ---
 
 ## Goals
 
 - Deliver an accurate, repeatable repo overview.  
-- Capture the key details needed to generate `agent.md`.  
+- Capture the key details needed to generate `agents.md`.  
 - Reveal structure, dependencies, and testing conventions clearly.  
 - Help AI agents slot into your workflow with minimal setup.
 

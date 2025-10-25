@@ -9,16 +9,24 @@
 //
 // THE SOFTWARE IS PROVIDED AS IS, WITHOUT WARRANTY OF ANY KIND.
 
+using System.Text;
 using AgentPrimer.Utilities;
+using DTC.Core.Markdown;
 
 namespace AgentPrimer;
 
 internal static class Program
 {
-    public static int Main()
+    public static int Main(string[] args)
     {
+        // Parse command-line flags.
+        if (!TryParseFlags(args, out var agentMode, out var showHelp))
+            return ShowUsage();
+
+        if (showHelp)
+            return ShowUsage();
         using var appSettings = new AppSettings();
-        var output = new ConsoleReportOutput();
+        var output = new ConsoleReportOutput(agentMode);
 
         var currentDirectory = Directory.GetCurrentDirectory();
         if (!RepositoryLocator.TryFindGitRoot(currentDirectory, out var repoPath))
@@ -129,5 +137,66 @@ internal static class Program
             .ThenBy(f => f.Path, StringComparer.OrdinalIgnoreCase)
             .Take(8)
             .ToArray();
+    }
+
+    private static bool TryParseFlags(string[] args, out bool agentMode, out bool showHelp)
+    {
+        agentMode = false;
+        showHelp = false;
+        if (args == null || args.Length == 0)
+            return true;
+
+        foreach (var raw in args)
+        {
+            var a = raw?.Trim();
+            if (string.IsNullOrEmpty(a))
+                continue;
+
+            if (a.Equals("/agent", StringComparison.OrdinalIgnoreCase) ||
+                a.Equals("--agent", StringComparison.OrdinalIgnoreCase) ||
+                a.Equals("-a", StringComparison.Ordinal))
+            {
+                agentMode = true;
+                continue;
+            }
+
+            if (a.Equals("/?:", StringComparison.Ordinal) || // some shells pass "/?:"
+                a.Equals("/?", StringComparison.Ordinal) ||
+                a.Equals("/h", StringComparison.OrdinalIgnoreCase) ||
+                a.Equals("/help", StringComparison.OrdinalIgnoreCase) ||
+                a.Equals("--help", StringComparison.OrdinalIgnoreCase) ||
+                a.Equals("-h", StringComparison.Ordinal) ||
+                a.Equals("-?", StringComparison.Ordinal))
+            {
+                showHelp = true;
+                continue;
+            }
+
+            // Unknown switch that looks like a flag => show usage.
+            if (a.StartsWith('-') || a.StartsWith('/'))
+                return false;
+        }
+
+        return true;
+    }
+
+    private static int ShowUsage()
+    {
+        var usage = new StringBuilder();
+        usage
+            .AppendLine("# AgentPrimer")
+            .AppendLine("A quick way to teach AI tools how your codebase works.")
+            .AppendLine("## Usage")
+            .AppendLine("AgentPrimer [--agent | --help]")
+            .AppendLine("## Examples:")
+            .AppendLine("* `AgentPrimer`            Generate console report for current git repo.")
+            .AppendLine("* `AgentPrimer --agent`    Include AI agent notes (also accepts /agent, -a).")
+            .AppendLine("* `AgentPrimer --help`     Show this help (also accepts /?, -h).")
+            .AppendLine("## Switches")
+            .AppendLine("* `--agent | -a | /agent`    Enables Agent Instructions mode.")
+            .AppendLine("* `--help  | -h | -? | /?`   Show this help text.");
+
+        new ConsoleMarkdown().Write(usage.ToString());
+        return 0;
     }
 }

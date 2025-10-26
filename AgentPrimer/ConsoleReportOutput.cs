@@ -69,8 +69,11 @@ internal sealed class ConsoleReportOutput
             sb.AppendLine("- Prefer existing frameworks, tests, and naming conventions shown here.");
         }
         
-        sb.AppendLine("## Path");
-        sb.AppendLine($"  `{report.RepositoryPath}`");
+        if (!m_agentMode)
+        {
+            sb.AppendLine("## Path");
+            sb.AppendLine($"  `{report.RepositoryPath}`");
+        }
 
         if (report.Repositories.Count > 0)
         {

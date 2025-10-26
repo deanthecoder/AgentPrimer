@@ -9,8 +9,6 @@ Avoid unnecessary token use; prefer referencing this document instead of re-pars
 - Keep context usage lean: prefer summaries and interfaces over ingesting full source files.
 - Match the English style as reported below.
 - Prefer existing frameworks, tests, and naming conventions shown here.
-## Path
-  `/Users/dean/Documents/Source/Repos/AgentPrimer`
 ## Repositories (3)
 > **Agent note:** Sub-modules and sibling repositories often expose reusable libraries (e.g., extension methods, utilities). Cross-reference these before re-implementing.
 
@@ -37,7 +35,7 @@ Avoid unnecessary token use; prefer referencing this document instead of re-pars
 * 11.07 KB     : `AgentPrimer/Utilities/ProjectPreferencesAnalyzer.cs`
 * 10.81 KB     : `DTC.Core/DTC.Core/Extensions/DirectoryInfoExtensions.cs`
 * 8.59 KB      : `AgentPrimer/Utilities/GitRepositoryInspector.cs`
-* 8.43 KB      : `AgentPrimer/ConsoleReportOutput.cs`
+* 8.49 KB      : `AgentPrimer/ConsoleReportOutput.cs`
 ## NuGet (11)
 > **Agent note:** Prefer solutions using the listed packages and frameworks; avoid introducing new technologies without justification.
 

@@ -67,6 +67,7 @@ internal sealed class ConsoleReportOutput
             sb.AppendLine("- Keep context usage lean: prefer summaries and interfaces over ingesting full source files.");
             sb.AppendLine("- Match the English style as reported below.");
             sb.AppendLine("- Prefer existing frameworks, tests, and naming conventions shown here.");
+            sb.AppendLine("- Check Supported UI Languages when adding UI strings so required translations stay in sync.");
         }
         
         if (!m_agentMode)
@@ -115,6 +116,14 @@ internal sealed class ConsoleReportOutput
             sb.AppendLine($"* Languages  : {languageSummary}");
         }
         sb.AppendLine($"* English    : {report.EnglishPreference} English");
+
+        if (report.SupportedUiLanguages.Length > 0)
+        {
+            sb.AppendLine($"## Supported UI Languages ({report.SupportedUiLanguages.Length})");
+            AppendAgentNotes(sb, "When adding or updating UI strings, consider if these listed languages need to receive corresponding translation updates.");
+            foreach (var language in report.SupportedUiLanguages)
+                sb.AppendLine($"* {language}");
+        }
 
         if (report.LargestSourceFiles.Length > 0)
         {

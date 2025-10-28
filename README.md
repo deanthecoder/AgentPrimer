@@ -17,6 +17,7 @@ It’s like handing an AI assistant a crash course in your project before it eve
 - Summarizes repo structure, file paths, and linked GitHub remotes.  
 - Reports language mix, package dependencies, and framework usage.  
 - Highlights project layout, test frameworks, and authoring conventions.
+- Detects localized resources to highlight supported UI languages.
 
 ---
 
@@ -50,6 +51,12 @@ Stats
   * Files      : 104
   * Languages  : C# (99%)
   * English    : American English
+  
+Supported UI Languages (4)
+  * English (US)
+  * English (GB)
+  * Chinese (Simplified)
+  * Japanese
   
 Largest Source Files (8)
   * 19.51 KB     : Installer/pack.py

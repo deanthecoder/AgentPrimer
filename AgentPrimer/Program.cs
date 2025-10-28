@@ -80,6 +80,7 @@ internal static class Program
             .ToArray();
 
         var largestSourceFiles = GetLargestSourceFiles(repoPath, sourceFiles);
+        var supportedUiLanguages = LocalizationAnalyzer.GetSupportedUiLanguages(sourceFiles);
 
         var report = new PrimerReport
         {
@@ -93,6 +94,7 @@ internal static class Program
             UnitTestFramework = unitTestFramework,
             MockingFramework = mockingFramework,
             PreferredUiLibraries = uiLibraries ?? [],
+            SupportedUiLanguages = supportedUiLanguages,
             InternalProjects = internalProjectReferences,
             ReadmeFiles = readmeFiles,
             LargestSourceFiles = largestSourceFiles

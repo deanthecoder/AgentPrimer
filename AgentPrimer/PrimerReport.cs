@@ -30,6 +30,8 @@ internal sealed class PrimerReport
 
     public required IReadOnlyList<(string Name, string Description)> NugetPackages { get; init; }
 
+    public string[] SupportedUiLanguages { get; init; } = [];
+
     public bool? NullableReferenceTypesEnabled { get; init; }
 
     public UnitTestFramework? UnitTestFramework { get; init; }

@@ -141,12 +141,11 @@ internal sealed class ConsoleReportOutput
         }
         else
         {
-            var names = report.NugetPackages
-                .Select(i => $"`{i.Name}`")
+            var padding = report.NugetPackages.Max(o => o.Name.Length);
+            report.NugetPackages
+                .Select(i => $"* `{i.Name.PadRight(padding)}` : {i.Description}")
                 .OrderBy(n => n, StringComparer.OrdinalIgnoreCase)
-                .ToArray();
-
-            ConsoleSectionWriter.PrintWrappedList(sb, names, indent: "  ", maxWidth: 80, separator: " | ");
+                .ForEach(o => sb.AppendLine(o));
         }
 
         sb.AppendLine("## Preferences");

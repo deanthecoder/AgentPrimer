@@ -50,7 +50,8 @@ internal static class NugetPackageAnalyzer
                     return (name, description);
                 })
                 .Where(o => packageIds.Contains(o.name))
-                .ToDictionary(o => o.name, o => o.description, StringComparer.OrdinalIgnoreCase);
+                .GroupBy(o => o.name, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.First().description, StringComparer.OrdinalIgnoreCase);
 
         var unknownPackageIds = packageIds.Except(result.Keys).ToArray();
         if (unknownPackageIds.Length > 0)

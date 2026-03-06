@@ -69,6 +69,7 @@ internal sealed class ConsoleReportOutput
             sb.AppendLine("- Prefer existing frameworks, tests, and naming conventions shown here.");
             sb.AppendLine("- Check Supported UI Languages when adding UI strings so required translations stay in sync.");
             sb.AppendLine("- Use the `ripgrep` tool for efficient code searching, if available.");
+            sb.AppendLine("- Add top-level documentation for new or updated classes and interfaces (or equivalent language constructs): include a concise description and contextual usage notes.");
         }
         
         if (!m_agentMode)
